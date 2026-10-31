@@ -4,6 +4,7 @@ jspm_packages/
 web_modules/
 db_dump/
 uploads/
+docs/
 
 # Environment files
 .env

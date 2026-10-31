@@ -1,17 +1,23 @@
 import express from "express";
-import { signup, login } from "../controllers/auth.controller.js";
+import {
+  register_user,
+  login_user,
+  logout_user,
+} from "../controllers/auth.controller.js";
 import { authenticateUser } from "../middleware/auth.middleware.js";
+import {
+  validate_register,
+  validate_login,
+} from "../middleware/validate.middleware.js";
 
 const router = express.Router();
 
-router.post("/signup", signup);
-router.post("/login", login);
+// Public routes
+router.post("/register", validate_register, register_user);
+router.post("/signup", validate_register, register_user);
+router.post("/login", validate_login, login_user);
 
-router.get("/profile", authenticateUser, (req, res) => {
-  res.status(200).json({
-    success: true,
-    user: req.user,
-  });
-});
+// Protected route
+router.post("/logout", authenticateUser, logout_user);
 
 export default router;

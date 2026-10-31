@@ -1,19 +1,19 @@
 import jwt from "jsonwebtoken";
-import dotenv from "dotenv";
+import env from "../config/env.config.js";
 
-dotenv.config();
-
-export const generateToken = (user) => {
-
-    return jwt.sign(
-        {
-            id: user.id,
-            email: user.email
-        },
-        process.env.JWT_SECRET,
-        {
-            expiresIn: "7d"
-        }
-    );
-
+export const generate_token = (user) => {
+  return jwt.sign(
+    {
+      id: user._id ? user._id.toString() : user.id,
+      email: user.email,
+      role: user.role || "user",
+    },
+    env.jwt_secret,
+    {
+      expiresIn: env.jwt_expires_in,
+    }
+  );
 };
+
+export const generateToken = generate_token;
+export default generate_token;

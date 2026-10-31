@@ -1,44 +1,43 @@
-import { loginService, signupService } from "../services/auth.service.js";
+import {
+  register_user_service,
+  login_user_service,
+  logout_user_service,
+} from "../services/auth.service.js";
+import async_handler from "../utils/async_handler.util.js";
+import { send_success } from "../utils/response.util.js";
 
-export const login = async (req, res) => {
-  try {
-    const user = await loginService(req.body);
+export const register_user = async_handler(async (req, res) => {
+  const result = await register_user_service(req.body);
 
-    return res.status(200).json({
-      success: true,
-      message: "Login successful.",
-      data: user,
-    });
-  } catch (error) {
-    return res.status(401).json({
-      success: false,
-      message: error.message,
-    });
-  }
-};
+  return send_success(res, {
+    status_code: 201,
+    message: "User registered successfully.",
+    data: result,
+  });
+});
 
-export const signup = async (req, res) => {
-  try {
-    const user = await signupService(req.body);
+export const login_user = async_handler(async (req, res) => {
+  const result = await login_user_service(req.body);
 
-    return res.status(201).json({
-      success: true,
-      message: "Sign up Successful",
-      data: user,
-    });
-  } catch (error) {
-    console.error(error);
+  return send_success(res, {
+    status_code: 200,
+    message: "Login successful.",
+    data: result,
+  });
+});
 
-    if (error.code === 11000 || error.code === "23505") {
-      return res.status(409).json({
-        success: false,
-        message: "Email already exists.",
-      });
-    }
+export const logout_user = async_handler(async (req, res) => {
+  const result = await logout_user_service(req.user.id);
 
-    return res.status(500).json({
-      success: false,
-      message: "Internal Server Error.",
-    });
-  }
+  return send_success(res, {
+    status_code: 200,
+    message: "Logged out successfully.",
+    data: result,
+  });
+});
+
+export default {
+  register_user,
+  login_user,
+  logout_user,
 };

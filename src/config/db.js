@@ -1,17 +1,15 @@
 import mongoose from "mongoose";
-import dotenv from "dotenv";
+import env, { validate_env } from "./env.config.js";
 
-dotenv.config();
-
-const connectDB = async () => {
+const connect_db = async () => {
   try {
-    const mongoURI = process.env.MONGODB_URI;
+    validate_env();
 
-    if (!mongoURI) {
-      throw new Error("MONGODB_URI is not defined in the environment variables.");
-    }
-
-    const conn = await mongoose.connect(mongoURI);
+    const conn = await mongoose.connect(env.mongo_uri, {
+      maxPoolSize: 10,
+      serverSelectionTimeoutMS: 5000,
+      socketTimeoutMS: 45000,
+    });
 
     console.log(`✅ MongoDB Atlas Connected: ${conn.connection.host}`);
     return conn;
@@ -21,7 +19,6 @@ const connectDB = async () => {
   }
 };
 
-// Handle connection events
 mongoose.connection.on("connected", () => {
   console.log("Mongoose connected to MongoDB Atlas");
 });
@@ -34,4 +31,5 @@ mongoose.connection.on("disconnected", () => {
   console.log("Mongoose connection disconnected");
 });
 
-export default connectDB;
+export { connect_db };
+export default connect_db;
